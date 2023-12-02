@@ -1,32 +1,32 @@
 const form = document.querySelector('.feedback-form');
-const myEmail = form.elements.email;
-const myTextarea = form.elements.message;
-const [localeStorInput, localeStorText] = 'feedback-form-state';
-
-//
-myEmail.value = localStorage.getItem(localeStorInput);
-myTextarea.value = localStorage.getItem(localeStorText);
-
+const keyLocalStor = 'feedback-form-state';
+let userData = {
+  email: form.elements.email.value,
+  message: form.elements.message.value,
+};
+const newObj = JSON.parse(localStorage.getItem(keyLocalStor));
+if (newObj) {
+  userData.email = newObj.email;
+  userData.message = newObj.message;
+  form.elements.email.value = newObj.email;
+  form.elements.message.value = newObj.message;
+}
 // input
 form.addEventListener('input', e => {
-  if (e.target.nodeName === 'TEXTAREA') {
-    localStorage.setItem(localeStorText, e.target.value.trim());
-  }
   if (e.target.nodeName === 'INPUT') {
-    localStorage.setItem(localeStorInput, e.target.value.trim());
+    userData.email = e.target.value.trim();
   }
+  if (e.target.nodeName === 'TEXTAREA') {
+    userData.message = e.target.value.trim();
+  }
+  localStorage.setItem(keyLocalStor, JSON.stringify(userData));
 });
-// submit
 
 form.addEventListener('submit', event => {
-  if (myEmail.value.trim() && myTextarea.value.trim()) {
+  if (userData.email !== '' && userData.message !== '') {
     event.preventDefault();
-    console.log({
-      email: myEmail.value.trim(),
-      message: myTextarea.value.trim(),
-    });
-    localStorage.removeItem(localeStorInput);
-    localStorage.removeItem(localeStorText);
+    console.log(userData);
+    localStorage.removeItem(keyLocalStor);
     form.reset();
   }
 });
